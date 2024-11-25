@@ -21,4 +21,27 @@ export async function createEvent(req, res) {
     } catch (error) {
         res.status(500).json({message: "something went wrong..."})
     }
+
+}
+
+export async function fetchSingleEvent(req, res) {
+    try{
+        const {id} = req.params
+        const event = await prisma.event.findFirst({
+            where: {
+                id
+            },
+            include: {
+                user: true
+            }
+        })
+        if(!event){
+            res.status(404).json({message: "event not found!"})
+            return;
+        }
+        res.status(200).json(event)
+
+    } catch (error) {
+        res.status(500).json({message: "something went wrong..."})  
+    }
 }
