@@ -1,9 +1,12 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
-import bcypt from 'bcryptjs';
 import cors from 'cors'
-import jwt from 'jsonwebtoken';
-
+import cookieParser from "cookie-parser";
+import { registerUser } from './controllers/users.js';
+import { loginUser } from './controllers/auth.js';
+import { createEvent } from './controllers/events.js';
+import verifyToken  from './middleware/verifyToken.js';
+import  validateEvent  from './middleware/validateEvent.js';
+//
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -14,54 +17,14 @@ app.use(cors({
 
 }))
 
-const client = new PrismaClient();
+app.use(cookieParser());
 
-app.post("/users", async (req, res) => {
-    try{
-        const {firstName, lastName, email, password} = req.body;
-        const hashedPassword = await bcypt.hash(password, 8);
 
-        const user = await client.user.create({
-            data: {
-                firstName,  
-                lastName,
-                email,
-                password : hashedPassword
-            }
-        })
-        res.status(201).json(user);
-    } catch (error) {
-        res.status(500).json({message: "something went wrong..."})
-    }
-})
+//routes
+app.post("/users", registerUser); 
 
-app.post("/auth/login", async (req, res) => {
-    try {
-        const {email, password} = req.body;
-        const user = await client.user.findUnique({
-            where: {
-                email: email
-            }
-        })
+app.post("/auth/login", loginUser);
 
-        if(!user){
-            res.status(404).json({message: "wrong email or password!"});
-            return;
-        }
-
-        const isPasswordValid = await bcypt.compare(password, user.password);
-        if(!isPasswordValid){
-            res.status(401).json({message: "wrong email or password!"});
-            return;
-        }
-        const token = jwt.sign(user.id, process.env.JWT_SECRET)
-        res.status(200).cookie("authToken", token, {
-            httpOnly: true,
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
-        }).json(user);
-    } catch (error) {
-        res.status(500).json({message: "something went wrong..."})
-    }
-})
-
+app.post("/events", verifyToken, validateEvent, createEvent); 
+//server
 app.listen(1929, () => console.log('Server running on port 1929...'));

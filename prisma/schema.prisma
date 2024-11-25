@@ -19,6 +19,22 @@ model User {
   password  String
   firstName String 
   lastName  String
+  events    Event[]
 
   @@map("users")
+}
+
+model Event {
+  id        String    @id @default(uuid())
+  title     String
+  theme     String
+  image     String
+  body      String
+  number    Int
+  createdAt DateTime @default(now())   
+  owner     String
+
+  user User @relation(fields: [owner], references: [id])
+
+  @@map("events")
 }
