@@ -77,3 +77,20 @@ export async function getUserEvents(req, res) {
         res.status(500).json({ message: "something went wrong..." });
     }
 }
+
+
+export async function deleteEvent(req, res) {
+    try {
+        const {id} = req.params
+        const userId = req.userId
+        const event = await prisma.event.delete({
+            where: {
+                id,
+                owner: userId
+            }
+        })
+        res.status(200).json("noted deleted successfully")
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong..." });
+    }
+}
