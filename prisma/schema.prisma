@@ -31,7 +31,8 @@ model Event {
   image     String
   body      String
   number    Int
-  createdAt DateTime @default(now())   
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @default(now())
   owner     String
 
   user User @relation(fields: [owner], references: [id])

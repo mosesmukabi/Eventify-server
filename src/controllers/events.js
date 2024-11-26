@@ -94,3 +94,28 @@ export async function deleteEvent(req, res) {
         res.status(500).json({ message: "something went wrong..." });
     }
 }
+
+
+export async function updateEvent(req, res) {
+    try {
+        const {id} = req.params
+        const userId = req.userId
+        const {title, theme, image, body, number} = req.body
+        const event = await prisma.event.update({
+            where: {
+                id,
+                owner: userId
+            },
+            data: {
+                title,
+                theme,
+                image,
+                body,
+                number
+            }
+        })
+        res.status(200).json(event)
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong..." });
+    }
+}
