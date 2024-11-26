@@ -62,3 +62,18 @@ export async function fetchAllEvents(req, res) {
         res.status(500).json({ message: "something went wrong..." });
     }
 }
+
+
+export async function getUserEvents(req, res) {
+    try {
+        const userId = req.userId
+        const events = await prisma.event.findMany({
+            where: {
+                owner: userId
+            }
+        })
+        res.status(200).json(events)
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong..." });
+    }
+}

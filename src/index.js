@@ -3,7 +3,7 @@ import cors from 'cors'
 import cookieParser from "cookie-parser";
 import { registerUser } from './controllers/users.js';
 import { loginUser } from './controllers/auth.js';
-import { createEvent, fetchSingleEvent, fetchAllEvents } from './controllers/events.js';
+import { createEvent, fetchSingleEvent, fetchAllEvents, getUserEvents } from './controllers/events.js';
 import verifyToken  from './middleware/verifyToken.js';
 import  validateEvent  from './middleware/validateEvent.js';
 //
@@ -25,10 +25,13 @@ app.post("/users", registerUser);
 
 app.post("/auth/login", loginUser);
 
-app.post("/events", verifyToken, validateEvent, createEvent); 
+app.post("/events", verifyToken, validateEvent, createEvent);
+
+app.get("/events/user", verifyToken, getUserEvents); 
 
 app.get("/events/:id", verifyToken, fetchSingleEvent); //fetch single note by id
 
 app.get("/events", verifyToken, fetchAllEvents);
+
 //server
 app.listen(1929, () => console.log('Server running on port 1929...'));
