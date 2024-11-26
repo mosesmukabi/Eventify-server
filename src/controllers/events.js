@@ -45,3 +45,20 @@ export async function fetchSingleEvent(req, res) {
         res.status(500).json({message: "something went wrong..."})  
     }
 }
+
+
+export async function fetchAllEvents(req, res) {
+    try {
+        const notes = await prisma.event.findMany({
+            include: {
+                user: true
+            }
+
+
+        })
+        res.status(200).json(notes)
+       
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong..." });
+    }
+}
