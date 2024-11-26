@@ -28,3 +28,26 @@ export const registerUser = async (req, res) => {
     }
 }
 
+
+export async function updatePersonalInfo (req, res) {
+    try{
+        const {firstName, lastName, email} = req.body;
+        const id = req.userId;
+        const user = await client.user.update({
+            where: {
+                id
+            },
+            data: {
+                firstName,  
+                lastName,
+                email
+            }
+        })
+        
+   
+        res.status(200).json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: "something went wrong..."})
+    }
+}
