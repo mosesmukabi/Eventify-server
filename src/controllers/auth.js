@@ -32,3 +32,40 @@ export const loginUser = async (req, res) => {
         res.status(500).json({message: "something went wrong..."})
     }
 }
+
+
+export async function updatePassword(req, res) {
+    try {
+      const id = req.userId; // Assuming req.userId is populated from a middleware
+      const { oldPassword, newPassword } = req.body;
+  
+      // Find user in database
+      const user = await client.user.findFirst({ where: { id } });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Check if oldPassword matches the current password
+      const theyMatch = await bcypt.compare(oldPassword, user.password);
+      if (!theyMatch) {
+        // Respond with a 400 Bad Request status for incorrect password
+        return res.status(400).json({ message: "Incorrect old password" });
+      }
+  
+      // Hash and update the new password
+      const hashedPassword = await bcypt.hash(newPassword, 8);
+      await client.user.update({
+        where: { id },
+        data: {
+          password: hashedPassword,
+        },
+      });
+  
+      // Respond with success
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+  

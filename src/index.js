@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors'
 import cookieParser from "cookie-parser";
 import { registerUser, updatePersonalInfo } from './controllers/users.js';
-import { loginUser } from './controllers/auth.js';
+import { loginUser, updatePassword } from './controllers/auth.js';
 import { createEvent, fetchSingleEvent, fetchAllEvents, getUserEvents, deleteEvent, updateEvent, getUserProfile  } from './controllers/events.js';
 import verifyToken  from './middleware/verifyToken.js';
 import  validateEvent  from './middleware/validateEvent.js';
@@ -29,6 +29,8 @@ app.get("/users/me", verifyToken, getUserProfile);
 app.put("/users", verifyToken, updatePersonalInfo);
 
 app.post("/auth/login", loginUser);
+
+app.patch("/auth/password", verifyToken, updatePassword);
 
 app.post("/events", verifyToken, validateEvent, createEvent);
 
