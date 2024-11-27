@@ -14,28 +14,30 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  password  String
-  firstName String 
-  lastName  String
-  events    Event[]
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  firstName   String
+  lastName    String
+  events      Event[]   @relation("EventOwners") // Keeps the current relationship for event creation.
+  joinedEvents Event[]  @relation("UserJoinedEvents") // New relationship for joined events.
 
   @@map("users")
 }
 
 model Event {
-  id        String    @id @default(uuid())
-  title     String
-  theme     String
-  image     String
-  body      String
-  number    Int
-  createdAt DateTime @default(now()) 
-  updatedAt DateTime @default(now())
-  owner     String
+  id          String    @id @default(uuid())
+  title       String
+  theme       String
+  image       String
+  body        String
+  number      Int
+  createdAt   DateTime @default(now()) 
+  updatedAt   DateTime @default(now())
+  owner       String
 
-  user User @relation(fields: [owner], references: [id])
+  user        User      @relation("EventOwners", fields: [owner], references: [id]) // Keeps the current owner-user relationship.
+  joinedBy    User[]    @relation("UserJoinedEvents") // New relationship for users who join this event.
 
   @@map("events")
 }

@@ -141,3 +141,77 @@ export const getUserProfile = async (req, res) => {
       res.status(500).json({ message: "Error fetching user profile" });
     }
   };
+
+
+
+
+  export async function joinEvent(req, res) {
+    try {
+      const userId = req.userId; // Set by authentication middleware
+      const eventId = req.params.id;
+  
+      if (!userId || !eventId) {
+        return res.status(400).json({ message: "User ID or Event ID is missing." });
+      }
+  
+      await prisma.event.update({
+        where: { id: eventId },
+        data: {
+          joinedBy: {
+            connect: { id: userId },
+          },
+        },
+      });
+  
+      res.status(200).json({ message: "Successfully joined the event!" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Could not join the event." });
+    }
+  }
+  
+  
+  // Remove the current user from the event's joined list
+  export async function cancelEvent (req, res) {
+    try {
+      const id = req.userId; // Assume userId is set by authentication middleware
+      const eventId = req.params.id;
+  
+      await prisma.event.update({
+        where: { id: eventId },
+        data: {
+          joinedBy: {
+            disconnect: { id }, // Remove the user from the joinedBy list
+          },
+        },
+      });
+  
+      res.status(200).json({ message: "Successfully canceled your event participation!" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Could not cancel the event." });
+    }
+  };
+  
+  // Fetch all events the user has joined
+  export async function getJoinedEvents (req, res) {
+    try {
+      const id = req.userId; // Assume userId is set by authentication middleware
+  
+      const joinedEvents = await prisma.event.findMany({
+        where: {
+          joinedBy: {
+            some: { id }, // Filter for events the user has joined
+          },
+        },
+        include: {
+          user: true, // Include event owner details if needed
+        },
+      });
+  
+      res.status(200).json(joinedEvents);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Could not fetch joined events." });
+    }
+  };

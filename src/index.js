@@ -3,7 +3,7 @@ import cors from 'cors'
 import cookieParser from "cookie-parser";
 import { registerUser, updatePersonalInfo } from './controllers/users.js';
 import { loginUser, updatePassword } from './controllers/auth.js';
-import { createEvent, fetchSingleEvent, fetchAllEvents, getUserEvents, deleteEvent, updateEvent, getUserProfile  } from './controllers/events.js';
+import { createEvent, fetchSingleEvent, fetchAllEvents, getUserEvents, deleteEvent, updateEvent, getUserProfile, joinEvent, getJoinedEvents, cancelEvent  } from './controllers/events.js';
 import verifyToken  from './middleware/verifyToken.js';
 import  validateEvent  from './middleware/validateEvent.js';
 //
@@ -42,6 +42,11 @@ app.get("/events", verifyToken, fetchAllEvents);
 app.delete("/events/:id", verifyToken, deleteEvent);
 
 app.put("/events/:id", verifyToken, validateEvent, updateEvent);
+app.post("/events/:id/join", verifyToken,  joinEvent);
+app.post("/events/:id/cancel", verifyToken, cancelEvent);
+app.get("/joined-events", verifyToken, getJoinedEvents);
+
+
 
 
 //server

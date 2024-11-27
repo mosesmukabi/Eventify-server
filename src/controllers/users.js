@@ -51,3 +51,9 @@ export async function updatePersonalInfo (req, res) {
         res.status(500).json({message: "something went wrong..."})
     }
 }
+
+
+
+
+
+// Add the current user to the event's joined list
