@@ -215,3 +215,62 @@ export const getUserProfile = async (req, res) => {
       res.status(500).json({ message: "Could not fetch joined events." });
     }
   };
+
+
+
+
+  export async function getJoinedEvent(req, res) {
+    try {
+      const userId = req.userId; // Assume userId is set by authentication middleware
+  
+      const joinedEvents = await prisma.event.findMany({
+        where: {
+          joinedBy: {
+            some: { id: userId }, // Filters events where the user is in the `joinedBy` array
+          },
+        },
+        select: {
+          id: true, // Select only the event IDs
+        },
+      });
+  
+      res.status(200).json(joinedEvents.map((event) => event.id)); // Return an array of joined event IDs
+    } catch (error) {
+      console.error("Error fetching joined events:", error);
+      res.status(500).json({ message: "Could not fetch joined events." });
+    }
+  }
+  
+
+  export async function getJoinedEventParticipants(req, res) {
+    try {
+      const { eventId } = req.query; // Use req.query to get eventId
+  
+      if (!eventId) {
+        return res.status(400).json({ message: "Event ID is required." });
+      }
+  
+      // Fetch event participants
+      const event = await prisma.event.findUnique({
+        where: { id: eventId },
+        select: {
+          joinedBy: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      });
+  
+      if (!event) {
+        return res.status(404).json({ message: "Event not found." });
+      }
+  
+      res.status(200).json(event.joinedBy); // Return participants' names
+    } catch (error) {
+      console.error("Error fetching event participants:", error);
+      res.status(500).json({ message: "Could not fetch event participants." });
+    }
+  }
+  

@@ -19,8 +19,8 @@ model User {
   password    String
   firstName   String
   lastName    String
-  events      Event[]   @relation("EventOwners") // Keeps the current relationship for event creation.
-  joinedEvents Event[]  @relation("UserJoinedEvents") // New relationship for joined events.
+  events      Event[]   @relation("EventOwners") 
+  joinedEvents Event[]  @relation("UserJoinedEvents") 
 
   @@map("users")
 }
@@ -36,8 +36,8 @@ model Event {
   updatedAt   DateTime @default(now())
   owner       String
 
-  user        User      @relation("EventOwners", fields: [owner], references: [id]) // Keeps the current owner-user relationship.
-  joinedBy    User[]    @relation("UserJoinedEvents") // New relationship for users who join this event.
+  user        User      @relation("EventOwners", fields: [owner], references: [id]) 
+  joinedBy    User[]    @relation("UserJoinedEvents") 
 
   @@map("events")
 }
